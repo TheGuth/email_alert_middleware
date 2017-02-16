@@ -17,16 +17,28 @@ const app = express();
 
 // this route handler randomly throws one of `FooError`,
 // `BarError`, or `BizzError`
-const russianRoulette = (req, res) => {
+const russianRoulette = (req, res, next) => {
   const errors = [FooError, BarError, BizzError];
-  throw new errors[Math.floor(Math.random() * errors.length)]('It blew up!');
+  throw new errors[
+    Math.floor(Math.random() * errors.length)]('It blew up!');
+  next();
 };
 
+const defineEmail = (err, req, res, next) => {
+  if (err.name === "foo" ) {
+    sendEmail(fooErrorFrom);
+  }
+  else if (err.name === "bar") {
+    sendEmail(barErrorFrom);
+  }
+}
 
 app.use(morgan('common', {stream: logger.stream}));
 
 // for any GET request, we'll run our `russianRoulette` function
 app.get('*', russianRoulette);
+
+app.use(defineEmail); 
 
 const fooErrorFrom = {
   from: 'foo',
@@ -43,9 +55,22 @@ const barErrorFrom = {
   html: "<p>HTML version</p>"
 }; 
 
-app.use((err, req, res, next) => {
-  sendEmail(fooErrorFrom);
 
+
+// YOUR MIDDLEWARE FUNCTION should be activated here using
+// `app.use()`. It needs to come BEFORE the `app.use` call
+// below, which sends a 500 and error message to the client
+
+
+app.use((err, req, res, next) => {
+  logger.error(err);
+  res.status(500).json({error: 'Something went wrong'}).end();
+});
+
+const port = process.env.PORT || 8080;
+
+const listener = app.listen(port, function () {
+  logger.info(`Your app is listening on port ${port}`);
 });
 
 

@@ -8,16 +8,19 @@ function FooError(message) {
   this.message = message;
   const lastPart = new Error().stack.match(/[^\s]+$/);
   this.stack = `${this.name} at ${lastPart}`;
+  this.name = "foo";
 }
 
 function BarError(message) {
   this.message = message;
   this.stack = `${this.name} at ${new Error().stack.match(/[^\s]+$/)}`;
+  this.name= "bar";
 }
 
 function BizzError(message) {
   this.message = message;
   this.stack = `${this.name} at ${new Error().stack.match(/[^\s]+$/)}`;
+  this.name = "biz";
 }
 
 [[FooError, 'FooError'], [BarError, 'BarError'], [BizzError, 'BizzError']].forEach(
@@ -28,6 +31,5 @@ function BizzError(message) {
     pair[0].prototype.message = "";
     pair[0].prototype.constructor = pair[0];
 });
-
 
 module.exports = {FooError, BarError, BizzError};
