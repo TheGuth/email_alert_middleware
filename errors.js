@@ -29,4 +29,5 @@ function BizzError(message) {
     pair[0].prototype.constructor = pair[0];
 });
 
+
 module.exports = {FooError, BarError, BizzError};

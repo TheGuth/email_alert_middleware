@@ -14,6 +14,7 @@ const consoleOptions = {
   colorize: true
 };
 
+
 const logger = new (winston.Logger)({
   transports: [
     new (winston.transports.Console)(consoleOptions), 
